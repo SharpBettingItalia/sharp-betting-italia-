@@ -573,27 +573,23 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
         }
         let count = 0;
         for(const comp of comps){
-          if(count >= 6) break;
+          if(count >= 8) break;
           const cs = comp.competitors;
           if(!cs || cs.length < 2) continue;
+          const st = comp.status && comp.status.type ? comp.status.type : {};
+          if(st.state !== 'in') continue; // solo match live
           const nome = c => (c.athlete && (c.athlete.shortName || c.athlete.displayName))
                          || (c.team && c.team.shortDisplayName) || '?';
-          const setScore = c => (c.linescores || [])
+          const vals = c => (c.linescores || [])
             .map(l => (l.value !== undefined ? l.value : l.displayValue))
-            .filter(v => v !== undefined && v !== null)
-            .join(' ');
-          const n1 = nome(cs[0]), n2 = nome(cs[1]);
-          const s1 = setScore(cs[0]), s2 = setScore(cs[1]);
-          const st = comp.status && comp.status.type ? comp.status.type : {};
-          const state = st.state || '';
-          const detail = statoIt(st.shortDetail || st.description || '');
-          if(state === 'pre'){
-            out.push(`${tag} ${n1} vs ${n2} · <span style="color:var(--slate)">${detail}</span>`);
-          }else{
-            const live = state === 'in' ? '<b class="w">LIVE</b> · ' : '';
-            const punteggio = (s1 || s2) ? ` <b>${s1}</b> – <b>${s2}</b>` : '';
-            out.push(`${tag} ${live}${n1} vs ${n2}${punteggio} · <span style="color:var(--slate)">${detail}</span>`);
+            .filter(v => v !== undefined && v !== null);
+          const v1 = vals(cs[0]), v2 = vals(cs[1]);
+          const sets = [];
+          for(let i = 0; i < Math.max(v1.length, v2.length); i++){
+            sets.push(`${v1[i] ?? 0}-${v2[i] ?? 0}`);
           }
+          const punteggio = sets.length ? ` <b>${sets.join(' ')}</b>` : '';
+          out.push(`${tag} <b class="w">LIVE</b> · ${nome(cs[0])} vs ${nome(cs[1])}${punteggio}`);
           count++;
         }
       }catch(e){}
@@ -603,7 +599,13 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
 
   async function refresh(){
     const [prices, scores] = await Promise.all([getPrices(), getScores()]);
-    const items = [...prices, ...scores];
+    // alterna quotazioni e match live
+    const items = [];
+    const max = Math.max(prices.length, scores.length);
+    for(let i = 0; i < max; i++){
+      if(prices[i]) items.push(prices[i]);
+      if(scores[i]) items.push(scores[i]);
+    }
     if(items.length === 0){
       track.innerHTML = '<span>Quotazioni e risultati momentaneamente non disponibili</span>';
       return;
