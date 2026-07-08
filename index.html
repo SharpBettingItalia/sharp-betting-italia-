@@ -157,12 +157,22 @@ h1 em{font-style:normal;color:var(--amber)}
   padding:3px 10px;border-radius:99px;font-size:.7rem;letter-spacing:.1em;
 }
 .signal-head .time{color:var(--slate);font-size:.72rem}
-.signal-body{padding:18px}
-.signal-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed rgba(34,52,79,.8)}
-.signal-row:last-child{border-bottom:none}
-.signal-row .k{color:var(--slate)}
-.signal-row .v{font-weight:600}
-.signal-row .v.q{color:var(--amber)}
+.signal-body{padding:18px;display:flex;flex-direction:column;gap:12px}
+.tg-msg{
+  background:var(--ink-2);
+  border:1px solid var(--line);
+  border-radius:4px 14px 14px 14px;
+  padding:10px 14px;position:relative;
+}
+.tg-name{color:var(--amber);font-weight:600;font-size:.78rem;margin-bottom:4px}
+.tg-text{font-family:'IBM Plex Sans',sans-serif;font-size:.92rem}
+.tg-text .q{color:var(--amber)}
+.tg-react{
+  display:inline-block;margin-top:8px;
+  background:rgba(61,214,140,.12);border:1px solid rgba(61,214,140,.3);
+  border-radius:99px;padding:2px 10px;font-size:.85rem;
+}
+.tg-meta{color:var(--slate);font-size:.68rem;text-align:right;margin-top:6px}
 .signal-foot{
   padding:12px 18px;border-top:1px solid var(--line);
   display:flex;justify-content:space-between;align-items:center;
@@ -317,7 +327,7 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
   <div class="wrap hero-grid">
     <div>
       <h1>Le quote sbagliano.<br>Noi le <em>cacciamo</em>.</h1>
-      <p class="lead">Segnali di value betting basati sull'analisi di Medical TimeOut e disponibilità dei giocatori — le informazioni che i bookmaker prezzano in ritardo. Track record pubblico, documentato, verificabile.</p>
+      <p class="lead">Non solo segnali: Sharp Betting Italia è un ecosistema completo — bot che rilevano gli MTO in tempo reale, giocate live sul tennis documentate da 4+ anni di track record, e partnership in arrivo con bookmaker e broker per condizioni riservate alla community.</p>
       <div class="hero-ctas">
         <a class="btn" href="https://t.me/SharpBettingService" target="_blank" rel="noopener">Entra nel canale gratuito</a>
         <a class="btn ghost" href="#metodo">Come funziona</a>
@@ -325,17 +335,23 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
       <p class="hero-note">Nessuna carta richiesta. Il canale free è aperto a tutti (18+).</p>
     </div>
 
-    <div class="signal" role="img" aria-label="Esempio di segnale MTO inviato su Telegram">
+    <div class="signal" role="img" aria-label="Esempio di segnali MTO HUNTER inviati su Telegram">
       <div class="signal-head">
-        <span class="tag">⚡ SEGNALE MTO</span>
-        <span class="time">oggi · 14:32</span>
+        <span class="tag">⚡ LIVE DAL CANALE</span>
+        <span class="time">oggi</span>
       </div>
       <div class="signal-body">
-        <div class="signal-row"><span class="k">Evento</span><span class="v">ATP 250 · R16</span></div>
-        <div class="signal-row"><span class="k">Situazione</span><span class="v">MTO fisio · W1</span></div>
-        <div class="signal-row"><span class="k">Selezione</span><span class="v">ML Giocatore 2</span></div>
-        <div class="signal-row"><span class="k">Quota</span><span class="v q">@2.35</span></div>
-        <div class="signal-row"><span class="k">Stake</span><span class="v">2/10</span></div>
+        <div class="tg-msg">
+          <div class="tg-name">ALERT 🚨🚨🚨 | MTO HUNTER</div>
+          <div class="tg-text">Restate sul match di Tien</div>
+          <div class="tg-meta">👁 33 · 15:20</div>
+        </div>
+        <div class="tg-msg">
+          <div class="tg-name">ALERT 🚨🚨🚨 | MTO HUNTER</div>
+          <div class="tg-text">Punta Fucsovics 0.10 quota <b class="q">1.80</b></div>
+          <div class="tg-react">✅</div>
+          <div class="tg-meta">👁 34 · 15:21</div>
+        </div>
       </div>
       <div class="signal-foot">
         <span><span class="pulse"></span>Live sul gruppo VIP</span>
