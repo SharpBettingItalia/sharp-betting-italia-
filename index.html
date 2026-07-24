@@ -551,8 +551,19 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
       .replace('Suspended', 'Sospesa');
   }
 
+  // true solo se la partita e' di SINGOLARE (esclude doppi e misti)
+  function isSingolare(comp, groupingSlug){
+    const slugComp = (comp && comp.type && comp.type.slug) || '';
+    if(slugComp) return slugComp.indexOf('singles') !== -1;
+    if(groupingSlug) return groupingSlug.indexOf('singles') !== -1;
+    // nessuna etichetta: accetto solo se ogni lato ha UN solo giocatore
+    const cs = (comp && comp.competitors) || [];
+    return cs.every(c => c.athlete && !(Array.isArray(c.athletes) && c.athletes.length > 1));
+  }
+
   async function getScores(){
     const out = [];
+    const visti = new Set();               // evita doppioni fra i due feed
     const feeds = [
       ['🎾 ATP','https://site.api.espn.com/apis/site/v2/sports/tennis/atp/scoreboard'],
       ['🎾 WTA','https://site.api.espn.com/apis/site/v2/sports/tennis/wta/scoreboard']
@@ -567,24 +578,33 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
           if(Array.isArray(ev.groupings)){
             for(const g of ev.groupings){
               const slug = (g.grouping && g.grouping.slug) || '';
-              if(slug && slug.indexOf('singles') === -1) continue;
-              comps = comps.concat(g.competitions || []);
+              for(const c of (g.competitions || [])){
+                if(isSingolare(c, slug)) comps.push(c);
+              }
             }
           }
-          comps = comps.concat(ev.competitions || []);
+          for(const c of (ev.competitions || [])){
+            if(isSingolare(c, '')) comps.push(c);
+          }
         }
         let count = 0;
         for(const comp of comps){
           if(count >= 8) break;
+          if(comp.id){
+            if(visti.has(comp.id)) continue;
+            visti.add(comp.id);
+          }
           const cs = comp.competitors;
           if(!cs || cs.length < 2) continue;
           const st = comp.status && comp.status.type ? comp.status.type : {};
           if(st.state !== 'in') continue; // solo match live
           const nome = c => (c.athlete && (c.athlete.shortName || c.athlete.displayName))
-                                                 || (Array.isArray(c.athletes) && c.athletes.length
+                         || (Array.isArray(c.athletes) && c.athletes.length
                                ? c.athletes.map(a => a.shortName || a.displayName).filter(Boolean).join('/')
                                : '')
-                         || (c.team && c.team.shortDisplayName) || '?';
+                         || (c.team && c.team.shortDisplayName) || '';
+          const n1 = nome(cs[0]), n2 = nome(cs[1]);
+          if(!n1 || !n2) continue;         // niente nomi -> niente voce nel ticker
           const vals = c => (c.linescores || [])
             .map(l => (l.value !== undefined ? l.value : l.displayValue))
             .filter(v => v !== undefined && v !== null);
@@ -594,7 +614,7 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
             sets.push(`${v1[i] ?? 0}-${v2[i] ?? 0}`);
           }
           const punteggio = sets.length ? ` <b>${sets.join(' ')}</b>` : '';
-          out.push(`${tag} <b class="w">LIVE</b> · ${nome(cs[0])} vs ${nome(cs[1])}${punteggio}`);
+          out.push(`${tag} <b class="w">LIVE</b> · ${n1} vs ${n2}${punteggio}`);
           count++;
         }
       }catch(e){}
