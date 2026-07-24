@@ -566,6 +566,8 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
         for(const ev of (data.events || [])){
           if(Array.isArray(ev.groupings)){
             for(const g of ev.groupings){
+              const slug = (g.grouping && g.grouping.slug) || '';
+              if(slug && slug.indexOf('singles') === -1) continue;
               comps = comps.concat(g.competitions || []);
             }
           }
@@ -579,6 +581,9 @@ footer{padding:44px 0;font-size:.78rem;color:var(--slate)}
           const st = comp.status && comp.status.type ? comp.status.type : {};
           if(st.state !== 'in') continue; // solo match live
           const nome = c => (c.athlete && (c.athlete.shortName || c.athlete.displayName))
+                                                 || (Array.isArray(c.athletes) && c.athletes.length
+                               ? c.athletes.map(a => a.shortName || a.displayName).filter(Boolean).join('/')
+                               : '')
                          || (c.team && c.team.shortDisplayName) || '?';
           const vals = c => (c.linescores || [])
             .map(l => (l.value !== undefined ? l.value : l.displayValue))
